@@ -1,0 +1,83 @@
+# Dependencies
+node_modules
+npm-debug.log*
+pnpm-debug.log*
+.pnpm-store
+
+# Build outputs
+dist
+coverage
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git
+.gitignore
+README.md
+
+# Testing
+test
+*.test.ts
+*.spec.ts
+jest.config.*
+.nyc_output
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Prisma migrations (keep schema.prisma)
+prisma/migrations
+
+# Temporary folders
+tmp
+temp
+
+# Docker files (avoid recursion)
+Dockerfile*
+.dockerignore
+docker-compose*
+
+# Development tools
+.prettierrc
+.eslintrc*
+tsconfig*.json
+nest-cli.json
+
+# Documentation
+docs
+*.md
