@@ -1,10 +1,4 @@
-import {
-  IsOptional,
-  IsString,
-  IsNumber,
-  IsDateString,
-  Min,
-} from 'class-validator';
+import { IsOptional, IsString, IsNumber, Min } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
 export class GetTransactionsQueryDto {
@@ -20,41 +14,6 @@ export class GetTransactionsQueryDto {
   @IsNumber()
   @Min(1)
   limit?: number = 10;
-
-  // Filtering
-  @IsOptional()
-  @IsString()
-  msisdn?: string;
-
-  @IsOptional()
-  @IsString()
-  trx_id?: string;
-
-  @IsOptional()
-  @IsDateString()
-  trx_date_from?: string;
-
-  @IsOptional()
-  @IsDateString()
-  trx_date_to?: string;
-
-  @IsOptional()
-  @IsString()
-  item?: string;
-
-  @IsOptional()
-  @IsString()
-  voucher_code?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  status?: number;
-
-  // Search functionality
-  @IsOptional()
-  @IsString()
-  search?: string;
 
   // Sorting
   @IsOptional()
