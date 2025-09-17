@@ -37,13 +37,44 @@ export class TransactionService {
       limit = 10,
       sort_by = 'trx_date',
       sort_order = 'desc',
+      search,
+      msisdn,
+      status,
     } = query;
 
-    // Build order by clause
-    const orderBy: Prisma.TransactionVoucherOrderByWithRelationInput = {};
+    const take = Math.min(limit, 100);
 
-    // Validate sort_by field exists in the model
-    const validSortFields = [
+    const normalizedSearch: string | undefined = search?.toString().trim();
+
+    const where: Prisma.TransactionVoucherWhereInput = {
+      ...(msisdn ? { msisdn } : {}),
+      ...(typeof status === 'number' ? { status } : {}),
+      ...(normalizedSearch
+        ? {
+            OR: [
+              { msisdn: { contains: normalizedSearch, mode: 'insensitive' } },
+              { trx_id: { contains: normalizedSearch, mode: 'insensitive' } },
+              { item: { contains: normalizedSearch, mode: 'insensitive' } },
+              {
+                voucher_code: {
+                  contains: normalizedSearch,
+                  mode: 'insensitive',
+                },
+              },
+            ],
+          }
+        : {}),
+    };
+
+    type AllowedSort =
+      | 'id'
+      | 'msisdn'
+      | 'trx_id'
+      | 'trx_date'
+      | 'item'
+      | 'voucher_code'
+      | 'status';
+    const allowedSortFields: ReadonlyArray<AllowedSort> = [
       'id',
       'msisdn',
       'trx_id',
@@ -51,25 +82,55 @@ export class TransactionService {
       'item',
       'voucher_code',
       'status',
-    ];
-    const sortField = validSortFields.includes(sort_by) ? sort_by : 'trx_date';
-    orderBy[sortField] = sort_order;
+    ] as const;
 
-    // Execute queries in parallel
+    const safeSortField: AllowedSort = allowedSortFields.includes(
+      sort_by as AllowedSort,
+    )
+      ? (sort_by as AllowedSort)
+      : 'trx_date';
+
+    const primaryOrder: Prisma.TransactionVoucherOrderByWithRelationInput =
+      (() => {
+        const dir = sort_order as Prisma.SortOrder;
+        switch (safeSortField) {
+          case 'id':
+            return { id: dir };
+          case 'msisdn':
+            return { msisdn: dir };
+          case 'trx_id':
+            return { trx_id: dir };
+          case 'trx_date':
+            return { trx_date: dir };
+          case 'item':
+            return { item: dir };
+          case 'voucher_code':
+            return { voucher_code: dir };
+          case 'status':
+            return { status: dir };
+        }
+      })();
+
+    const orderBy: Prisma.TransactionVoucherOrderByWithRelationInput[] = [
+      primaryOrder,
+      { id: 'desc' },
+    ];
+
     const [transactions, total] = await Promise.all([
       this.prisma.transactionVoucher.findMany({
+        where,
         skip,
-        take: limit,
+        take,
         orderBy,
       }),
-      this.prisma.transactionVoucher.count(),
+      this.prisma.transactionVoucher.count({ where }),
     ]);
 
     return {
       data: transactions,
       total,
       skip,
-      limit,
+      limit: take,
     };
   }
 }
